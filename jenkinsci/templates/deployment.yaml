@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jenkinsci.fullname" . }}
+  namespace: {{ template "jenkinsci.namespace" . }}
+  labels:
+    {{- include "jenkinsci.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "jenkinsci.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "jenkinsci.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "jenkinsci.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: {{ .Values.busybox.name }}
+          image: {{ .Values.busybox.image }}
+          command: ["sh", "-c", "chown -R 1000:1000 /var/jenkins_home"]
+          resources:
+            {{ toYaml .Values.initContainer.resources | nindent 12 }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: jenkinshome
+              mountPath: {{ .Values.persistence.jenkins_homePath }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            - containerPort: 50000
+              name: agent
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            failureThreshold: 12
+          volumeMounts:
+            - name: jenkinshome
+              mountPath: {{ .Values.persistence.jenkins_homePath }}
+            - name: gitee-public
+              mountPath: {{ .Values.nfs.External_mount_Path }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: jenkinshome
+          persistentVolumeClaim:
+            claimName: {{ template "jenkinsci.fullname" . }}
+        - name: gitee-public
+          nfs:
+            path: {{ .Values.nfs.External_mount_Path}}
+            server: {{ .Values.nfs.server }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

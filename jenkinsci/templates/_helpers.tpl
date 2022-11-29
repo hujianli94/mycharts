@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "pineapple.name" -}}
+{{- define "jenkinsci.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "pineapple.fullname" -}}
+{{- define "jenkinsci.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -24,19 +24,33 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
+
+{{/*
+Allow the release namespace to be overridden for multi-namespace deployments in combined charts.
+*/}}
+{{- define "jenkinsci.namespace" -}}
+  {{- if .Values.namespaceOverride -}}
+    {{- .Values.namespaceOverride -}}
+  {{- else -}}
+    {{- .Release.Namespace -}}
+  {{- end -}}
+{{- end -}}
+
+
+
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "pineapple.chart" -}}
+{{- define "jenkinsci.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "pineapple.labels" -}}
-helm.sh/chart: {{ include "pineapple.chart" . }}
-{{ include "pineapple.selectorLabels" . }}
+{{- define "jenkinsci.labels" -}}
+helm.sh/chart: {{ include "jenkinsci.chart" . }}
+{{ include "jenkinsci.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,18 +60,20 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "pineapple.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "pineapple.name" . }}
+{{- define "jenkinsci.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "jenkinsci.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "pineapple.serviceAccountName" -}}
+{{- define "jenkinsci.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "pineapple.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "jenkinsci.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+

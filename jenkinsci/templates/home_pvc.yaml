@@ -1,0 +1,17 @@
+{{- if and .Values.persistence.enabled ( not .Values.persistence.existingClaim ) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "jenkinsci.fullname" . }}
+  namespace: {{ template "jenkinsci.namespace" . }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessModes | quote}}
+  storageClassName: {{ .Values.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.capacity.storage }}
+  selector:
+    matchLabels:
+      app: {{ template "jenkinsci.fullname" . }}
+{{- end }}
