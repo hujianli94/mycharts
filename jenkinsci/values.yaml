@@ -1,4 +1,4 @@
-# Default values for jenkinsci-gitee-helm.
+# Default values for jenkinsci
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -30,7 +30,7 @@ image:
   repository: jenkins/jenkins
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "2.361.4-lts-jdk11"
+  tag: "2.380-jdk11"
 
 
 

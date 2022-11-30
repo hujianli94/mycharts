@@ -2,13 +2,13 @@ apiVersion: v1
 entries:
   jenkinsci:
   - apiVersion: v2
-    appVersion: 2.361.4
-    created: "2022-11-29T13:53:43.552833672+08:00"
+    appVersion: 2.380-jdk11
+    created: "2022-11-30T14:01:15.949885101+08:00"
     description: A Helm chart for Kubernetes
-    digest: 5c11ab6416d5fd62c851beaa947123a1c28b4d3ff6229ccb17104c13728051af
+    digest: b0a30c05d1b3eb265f01fd34731645ab06526fdd63a5452121c4576da16e8945
     name: jenkinsci
     type: application
     urls:
     - charts/jenkinsci-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-29T13:53:43.540424551+08:00"
+generated: "2022-11-30T14:01:15.948128887+08:00"
