@@ -30,7 +30,7 @@ image:
   repository: jenkins/jenkins
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "2.390-jdk11"
+  tag: "2.401-jdk11"
 
 
 
