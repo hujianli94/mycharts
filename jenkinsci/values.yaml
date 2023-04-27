@@ -6,7 +6,7 @@
 replicaCount: 1
 
 # sc name
-storageClassName: managed-nfs-storage
+storageClassName: jenkins-nfs-client
 
 # namespace definition
 namespaceOverride: {}
@@ -27,7 +27,7 @@ initContainer:
       cpu: 10m
 
 image:
-  repository: jenkins/jenkins
+  repository: hub.gitee.com/kube-comm/jenkins
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "2.401-jdk11"
@@ -36,7 +36,7 @@ image:
 
 # Configure nfs storage server address nfs data storage directory external mount data directory
 nfs:
-  server: 192.168.1.60
+  server: 192.168.240.23
   path: /k8ssc/jenkinsci
   External_mount_Path: /global
 
@@ -96,17 +96,22 @@ service:
     nodePort: 32050
 
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    prometheus.io/http_probe: "true"
   hosts:
     - host: jenkinsci-dashboard.runjs.cn
-      paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+      paths:
+        - /
+  tls:
+    - secretName: kube-ops-secret
+      hosts:
+        - jenkinsci-dashboard.runjs.cn
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -115,7 +120,7 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
     cpu: "4000m"
-    memory: 4Gi
+    memory: 8Gi
   requests:
     cpu: "2000m"
     memory: 2Gi
