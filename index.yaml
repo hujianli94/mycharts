@@ -3,12 +3,12 @@ entries:
   jenkinsci:
   - apiVersion: v2
     appVersion: 2.401-jdk11
-    created: "2023-04-25T18:06:24.7050762+08:00"
+    created: "2023-04-27T11:46:52.061396745+08:00"
     description: A Helm chart for Kubernetes
-    digest: 4059f6330022e19c187db74f4cf476f647569e4ec37d69c655a0789526fecbdb
+    digest: 446f6ac7ea2a86fdfe1c2d5b4bf9de36945aebabd65f2bba304d3d41c19d1b55
     name: jenkinsci
     type: application
     urls:
     - charts/jenkinsci-0.2.0.tgz
     version: 0.2.0
-generated: "2023-04-25T18:06:24.7040733+08:00"
+generated: "2023-04-27T11:46:52.06036239+08:00"
